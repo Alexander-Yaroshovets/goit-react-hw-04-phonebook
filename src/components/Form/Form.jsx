@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 
 import {
   ContactForm,
@@ -8,78 +8,84 @@ import {
   FormButton,
 } from './Form.styled';
 
-export class Form extends React.Component {
-  state = {
-    name: '',
-    number: '',
-  };
+export const Form = ({ contacts, onSubmit, title }) => {
+  const [name, setname] = useState('');
+  const [number, setnumber] = useState('');
 
-  handleInputChange = event => {
+  const handleInputChange = event => {
     const { name, value } = event.target;
-    const { contacts } = this.props;
+    switch (name) {
+      case 'name':
+        setname(value);
+        break;
+      case 'number':
+        setnumber(value);
+        break;
+      default:
+        return;
+    }
 
     contacts.find(contact => {
-
       if (contact.name.toLowerCase() === value.toLowerCase()) {
-        console.log(alert(`${value} is olredy in contact`));
+        alert(`${value} is olredy in contact`);
       }
-
-      return this.setState({ [name]: value });
+      switch (name) {
+        case 'name':
+          setname(value);
+          break;
+        case 'number':
+          setnumber(value);
+          break;
+        default:
+      }
+      return name;
     });
   };
 
-  handleSubmit = event => {
+  const handleSubmit = event => {
     event.preventDefault();
-    this.props.onSubmit(this.state);
-    this.reset();
+    onSubmit(name, number);
+    reset();
   };
 
-  reset = () => {
-    this.setState({ name: '', number: '' });
+  const reset = () => {
+    setname('');
+    setnumber('');
   };
 
-  render() {
-    const { number, name } = this.state;
+  return (
+    <>
+      <FormTitle>{title}</FormTitle>
 
-    return (
-      <>
-        <FormTitle>{this.props.title}</FormTitle>
+      <ContactForm onSubmit={handleSubmit}>
+        <FormLabel>
+          Name
+          <FormInput
+            value={name}
+            type="text"
+            name="name"
+            pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+            title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+            required
+            onChange={handleInputChange}
+          />
+        </FormLabel>
 
-        <ContactForm onSubmit={this.handleSubmit}>
+        <FormLabel>
+          Number
+          <FormInput
+            value={number}
+            type="tel"
+            name="number"
+            pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+            title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+            required
+            onChange={handleInputChange}
+          />
+        </FormLabel>
 
-          <FormLabel>
-            Name
-            <FormInput
-              value={name}
-              type="text"
-              name="name"
-              pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-              title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-              required
-              onChange={this.handleInputChange}
-            />
-          </FormLabel>
-
-          <FormLabel>
-            Number
-            <FormInput
-              value={number}
-              type="tel"
-              name="number"
-              pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-              title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-              required
-              onChange={this.handleInputChange}
-            />
-          </FormLabel>
-
-          <FormButton type="submit">add contact</FormButton>
-
-        </ContactForm>
-      </>
-    );
-    
-  }
-}
-
-
+        <FormButton type="submit">add contact</FormButton>
+      </ContactForm>
+    </>
+  );
+};
